@@ -18,7 +18,7 @@ class UserCreateAPIView(CreateAPIView):
     user = get_user_model()
     queryset = user.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
         user = serializer.save(is_active=True)
@@ -29,7 +29,8 @@ class UserCreateAPIView(CreateAPIView):
 class UserRetrieveAPIView(RetrieveAPIView):
     user = get_user_model()
     queryset = user.objects.all()
-    serializer_class = [IsUser | IsAdminUser]
+    serializer_class = UserSerializer
+    permission_classes = [IsUser | IsAdminUser]
 
 
 class UserUpdateAPIView(UpdateAPIView):
