@@ -8,6 +8,7 @@ from users.serializers import UserSerializer
 
 
 class UserListAPIView(ListAPIView):
+    """ Возвращает информацию обо всех пользователях. """
     user = get_user_model()
     queryset = user.objects.all()
     serializer_class = UserSerializer
@@ -15,6 +16,7 @@ class UserListAPIView(ListAPIView):
 
 
 class UserCreateAPIView(CreateAPIView):
+    """ Создает нового пользователя. """
     user = get_user_model()
     queryset = user.objects.all()
     serializer_class = UserSerializer
@@ -27,6 +29,7 @@ class UserCreateAPIView(CreateAPIView):
 
 
 class UserRetrieveAPIView(RetrieveAPIView):
+    """ Возвращает информацию о конкретном пользователе. """
     user = get_user_model()
     queryset = user.objects.all()
     serializer_class = UserSerializer
@@ -34,6 +37,7 @@ class UserRetrieveAPIView(RetrieveAPIView):
 
 
 class UserUpdateAPIView(UpdateAPIView):
+    """ Редактирует информацию о конкретном пользователе. """
     user = get_user_model()
     queryset = user.objects.all()
     serializer_class = UserSerializer
@@ -47,6 +51,7 @@ class UserUpdateAPIView(UpdateAPIView):
 
 
 class UserDestroyAPIView(DestroyAPIView):
+    """ Удаляет конкретного пользователя. """
     user = get_user_model()
     queryset = user.objects.all()
     serializer_class = UserSerializer
