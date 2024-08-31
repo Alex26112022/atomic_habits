@@ -1,10 +1,10 @@
 from rest_framework.generics import CreateAPIView, ListAPIView, \
     RetrieveAPIView, UpdateAPIView, DestroyAPIView
-
 from habits.models import Habit
 from habits.paginators import MyPaginator
 from habits.permissions import IsOwner
 from habits.serializers import HabitSerializer, HabitCreateSerializer
+from habits.services import create_periodical_task, update_periodical_task
 
 
 class HabitCreateApiView(CreateAPIView):
@@ -15,6 +15,15 @@ class HabitCreateApiView(CreateAPIView):
     def perform_create(self, serializer):
         habit = serializer.save(owner=self.request.user)
         habit.save()
+
+        chat_id = '99'
+        create_periodical_task(pk=habit.pk, place=habit.place, time_=habit.time,
+                               action=habit.action,
+                               related_habit=habit.related_habit,
+                               reward=habit.reward,
+                               periodicity=habit.periodicity,
+                               time_to_complete=habit.time_to_complete,
+                               chat_id=chat_id)
 
 
 class HabitListApiView(ListAPIView):
@@ -49,6 +58,20 @@ class HabitUpdateApiView(UpdateAPIView):
     queryset = Habit.objects.all()
     serializer_class = HabitCreateSerializer
     permission_classes = [IsOwner]
+
+    def perform_update(self, serializer):
+        habit = serializer.save()
+        habit.save()
+
+        chat_id = '99'
+        update_periodical_task(pk=habit.pk, place=habit.place,
+                               time_=habit.time,
+                               action=habit.action,
+                               related_habit=habit.related_habit,
+                               reward=habit.reward,
+                               periodicity=habit.periodicity,
+                               time_to_complete=habit.time_to_complete,
+                               chat_id=chat_id)
 
 
 class HabitDestroyApiView(DestroyAPIView):
