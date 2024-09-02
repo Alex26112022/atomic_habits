@@ -1,3 +1,4 @@
+from django_celery_beat.models import PeriodicTask
 from rest_framework.generics import CreateAPIView, ListAPIView, \
     RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from habits.models import Habit
@@ -17,7 +18,8 @@ class HabitCreateApiView(CreateAPIView):
         habit.save()
 
         chat_id = '99'
-        create_periodical_task(pk=habit.pk, place=habit.place, time_=habit.time,
+        create_periodical_task(pk=habit.pk, place=habit.place,
+                               time_=habit.time,
                                action=habit.action,
                                related_habit=habit.related_habit,
                                reward=habit.reward,
@@ -79,6 +81,14 @@ class HabitDestroyApiView(DestroyAPIView):
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
     permission_classes = [IsOwner]
+
+    def perform_destroy(self, instance):
+        print(instance.id)
+        task_name = str(instance.id)
+        periodic_task = PeriodicTask.objects.get(name=str(task_name))
+        periodic_task.crontab.delete()
+        periodic_task.delete()
+        instance.delete()
 
 
 class HabitPublicListApiView(ListAPIView):
