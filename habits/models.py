@@ -41,10 +41,10 @@ class Habit(models.Model):
             self, *args, force_insert=False, force_update=False, using=None,
             update_fields=None
     ):
-        if self.pleasant and self.related_habit or self.pleasant and self.reward or self.reward and self.related_habit:
+        if self.pleasant and self.related_habit or self.pleasant and self.reward or self.reward and self.related_habit:  # noqa
             raise ValueError(
-                'Может быть указано либо поле Приятная привычка, либо Связанная привычка, либо Вознаграждение!')
-        super().save(*args, force_insert=False, force_update=False, using=None,
+                'Может быть указано либо поле Приятная привычка, либо Связанная привычка, либо Вознаграждение!')  # noqa
+        super().save(*args, force_insert=False, force_update=False, using=None,  # noqa
                      update_fields=None)
 
     class Meta:

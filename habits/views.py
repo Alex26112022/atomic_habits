@@ -1,10 +1,11 @@
+from django_celery_beat.models import PeriodicTask
 from rest_framework.generics import CreateAPIView, ListAPIView, \
     RetrieveAPIView, UpdateAPIView, DestroyAPIView
-
 from habits.models import Habit
 from habits.paginators import MyPaginator
 from habits.permissions import IsOwner
 from habits.serializers import HabitSerializer, HabitCreateSerializer
+from habits.services import create_periodical_task, update_periodical_task
 
 
 class HabitCreateApiView(CreateAPIView):
@@ -15,6 +16,15 @@ class HabitCreateApiView(CreateAPIView):
     def perform_create(self, serializer):
         habit = serializer.save(owner=self.request.user)
         habit.save()
+
+        create_periodical_task(pk=habit.pk, place=habit.place,
+                               time_=habit.time,
+                               action=habit.action,
+                               related_habit=habit.related_habit,
+                               reward=habit.reward,
+                               periodicity=habit.periodicity,
+                               time_to_complete=habit.time_to_complete,
+                               chat_id=habit.owner.telegram_chat_id)
 
 
 class HabitListApiView(ListAPIView):
@@ -50,12 +60,33 @@ class HabitUpdateApiView(UpdateAPIView):
     serializer_class = HabitCreateSerializer
     permission_classes = [IsOwner]
 
+    def perform_update(self, serializer):
+        habit = serializer.save()
+        habit.save()
+
+        update_periodical_task(pk=habit.pk, place=habit.place,
+                               time_=habit.time,
+                               action=habit.action,
+                               related_habit=habit.related_habit,
+                               reward=habit.reward,
+                               periodicity=habit.periodicity,
+                               time_to_complete=habit.time_to_complete,
+                               chat_id=habit.owner.telegram_chat_id)
+
 
 class HabitDestroyApiView(DestroyAPIView):
     """ Удаляет привычку. """
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
     permission_classes = [IsOwner]
+
+    def perform_destroy(self, instance):
+        task_name = str(instance.id)
+        if PeriodicTask.objects.filter(name=str(task_name)).exists():
+            periodic_task = PeriodicTask.objects.get(name=str(task_name))
+            periodic_task.crontab.delete()
+            periodic_task.delete()
+        instance.delete()
 
 
 class HabitPublicListApiView(ListAPIView):
