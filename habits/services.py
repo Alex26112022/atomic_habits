@@ -2,13 +2,24 @@ import json
 import zoneinfo
 from datetime import datetime, timedelta, time
 
+import requests
 from django_celery_beat.models import PeriodicTask, CrontabSchedule
-from config.settings import TIME_ZONE
+from config.settings import TIME_ZONE, TELEGRAM_TOKEN, TELEGRAM_URL
 
 
 def habit_send_tg(message, chat_id):
     """Отправляет текущие привычки в Telegram."""
-    print(message, chat_id)
+    if chat_id:
+        params = {
+            'text': message,
+            'chat_id': chat_id,
+        }
+        response = requests.get(
+            f'{TELEGRAM_URL}{TELEGRAM_TOKEN}/sendMessage',
+            params=params)
+        print(message, chat_id)
+    else:
+        print(message, 'telegram_chat_id не указан!')
 
 
 def create_periodical_task(pk, place, time_: datetime, action, related_habit,

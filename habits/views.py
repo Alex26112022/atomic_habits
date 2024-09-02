@@ -17,7 +17,6 @@ class HabitCreateApiView(CreateAPIView):
         habit = serializer.save(owner=self.request.user)
         habit.save()
 
-        chat_id = '99'
         create_periodical_task(pk=habit.pk, place=habit.place,
                                time_=habit.time,
                                action=habit.action,
@@ -25,7 +24,7 @@ class HabitCreateApiView(CreateAPIView):
                                reward=habit.reward,
                                periodicity=habit.periodicity,
                                time_to_complete=habit.time_to_complete,
-                               chat_id=chat_id)
+                               chat_id=habit.owner.telegram_chat_id)
 
 
 class HabitListApiView(ListAPIView):
@@ -65,7 +64,6 @@ class HabitUpdateApiView(UpdateAPIView):
         habit = serializer.save()
         habit.save()
 
-        chat_id = '99'
         update_periodical_task(pk=habit.pk, place=habit.place,
                                time_=habit.time,
                                action=habit.action,
@@ -73,7 +71,7 @@ class HabitUpdateApiView(UpdateAPIView):
                                reward=habit.reward,
                                periodicity=habit.periodicity,
                                time_to_complete=habit.time_to_complete,
-                               chat_id=chat_id)
+                               chat_id=habit.owner.telegram_chat_id)
 
 
 class HabitDestroyApiView(DestroyAPIView):
@@ -83,7 +81,6 @@ class HabitDestroyApiView(DestroyAPIView):
     permission_classes = [IsOwner]
 
     def perform_destroy(self, instance):
-        print(instance.id)
         task_name = str(instance.id)
         periodic_task = PeriodicTask.objects.get(name=str(task_name))
         periodic_task.crontab.delete()
