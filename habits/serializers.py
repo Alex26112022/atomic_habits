@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework.fields import IntegerField
 from rest_framework.serializers import ModelSerializer
 
 from habits.models import Habit

@@ -1,7 +1,5 @@
 from rest_framework import permissions
 
-from users.models import User
-
 
 class IsUser(permissions.BasePermission):
     """ Предоставляет доступ владельцу объекта. """

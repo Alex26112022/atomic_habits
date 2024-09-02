@@ -1,20 +1,21 @@
 import json
 import zoneinfo
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta
 
 import requests
 from django_celery_beat.models import PeriodicTask, CrontabSchedule
-from config.settings import TIME_ZONE, TELEGRAM_TOKEN, TELEGRAM_URL
+from config.settings import TIME_ZONE, TELEGRAM_TOKEN, TELEGRAM_URL, \
+    FIRST_INTERVAL, SECOND_INTERVAL
 
 
 def habit_send_tg(message, chat_id):
-    """Отправляет текущие привычки в Telegram."""
+    """ Отправляет текущие привычки в Telegram."""
     if chat_id:
         params = {
             'text': message,
             'chat_id': chat_id,
         }
-        response = requests.get(
+        requests.get(
             f'{TELEGRAM_URL}{TELEGRAM_TOKEN}/sendMessage',
             params=params)
         print(message, chat_id)
@@ -30,10 +31,11 @@ def create_periodical_task(pk, place, time_: datetime, action, related_habit,
     hour = '*'
     minute = '*'
 
-    delta_time1 = timedelta(minutes=3)
-    delta_time2 = timedelta(minutes=1)
+    delta_time1 = timedelta(minutes=FIRST_INTERVAL)
+    delta_time2 = timedelta(minutes=SECOND_INTERVAL)
     if time_:
-        dt = datetime(year=2024, month=10, day=10, hour=time_.hour, minute=time_.minute)
+        dt = datetime(year=2024, month=10, day=10, hour=time_.hour,
+                      minute=time_.minute)
 
         correction_time1 = (dt - delta_time1).time()
         correction_time2 = (dt - delta_time2).time()
@@ -81,10 +83,11 @@ def update_periodical_task(pk, place, time_: datetime, action, related_habit,
     hour = '*'
     minute = '*'
 
-    delta_time1 = timedelta(minutes=3)
-    delta_time2 = timedelta(minutes=1)
+    delta_time1 = timedelta(minutes=FIRST_INTERVAL)
+    delta_time2 = timedelta(minutes=SECOND_INTERVAL)
     if time_:
-        dt = datetime(year=2024, month=10, day=10, hour=time_.hour, minute=time_.minute)
+        dt = datetime(year=2024, month=10, day=10, hour=time_.hour,
+                      minute=time_.minute)
 
         correction_time1 = (dt - delta_time1).time()
         correction_time2 = (dt - delta_time2).time()

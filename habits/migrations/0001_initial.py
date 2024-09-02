@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -18,17 +17,45 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Habit',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('place', models.CharField(blank=True, max_length=255, null=True, verbose_name='Место')),
-                ('time', models.TimeField(blank=True, null=True, verbose_name='Время')),
-                ('action', models.CharField(blank=True, max_length=255, null=True, verbose_name='Действие')),
-                ('pleasant', models.BooleanField(blank=True, null=True, verbose_name='Приятная привычка')),
-                ('related_habit', models.CharField(blank=True, max_length=255, null=True, verbose_name='Связанная привычка')),
-                ('reward', models.CharField(blank=True, max_length=255, null=True, verbose_name='Вознаграждение')),
-                ('periodicity', models.PositiveIntegerField(blank=True, default=1, null=True, validators=[django.core.validators.MaxValueValidator(7)], verbose_name='Периодичность')),
-                ('time_to_complete', models.PositiveIntegerField(blank=True, null=True, validators=[django.core.validators.MaxValueValidator(120)], verbose_name='Время на выполнение')),
-                ('sign_of_publicity', models.BooleanField(blank=True, default=False, null=True, verbose_name='Признак публичности')),
-                ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='habit', to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True,
+                                           serialize=False,
+                                           verbose_name='ID')),
+                ('place',
+                 models.CharField(blank=True, max_length=255, null=True,
+                                  verbose_name='Место')),
+                ('time', models.TimeField(blank=True, null=True,
+                                          verbose_name='Время')),
+                ('action',
+                 models.CharField(blank=True, max_length=255, null=True,
+                                  verbose_name='Действие')),
+                ('pleasant', models.BooleanField(blank=True, null=True,
+                                                 verbose_name='Приятная привычка')),  # noqa
+                ('related_habit',
+                 models.CharField(blank=True, max_length=255, null=True,
+                                  verbose_name='Связанная привычка')),
+                ('reward',
+                 models.CharField(blank=True, max_length=255, null=True,
+                                  verbose_name='Вознаграждение')),
+                ('periodicity',
+                 models.PositiveIntegerField(blank=True, default=1, null=True,
+                                             validators=[
+                                                 django.core.validators.MaxValueValidator(  # noqa
+                                                     7)],
+                                             verbose_name='Периодичность')),
+                ('time_to_complete',
+                 models.PositiveIntegerField(blank=True, null=True,
+                                             validators=[
+                                                 django.core.validators.MaxValueValidator(  # noqa
+                                                     120)],
+                                             verbose_name='Время на выполнение')),  # noqa
+                ('sign_of_publicity',
+                 models.BooleanField(blank=True, default=False, null=True,
+                                     verbose_name='Признак публичности')),
+                ('owner',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                   related_name='habit',
+                                   to=settings.AUTH_USER_MODEL,
+                                   verbose_name='Пользователь')),
             ],
             options={
                 'verbose_name': 'Привычка',
