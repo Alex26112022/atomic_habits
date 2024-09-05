@@ -57,7 +57,7 @@ def create_periodical_task(pk, place, time_: datetime, action, related_habit,
                f'Время проведения: {time_}\n'
                f'Продолжительность: {time_to_complete} c.\n')
     if related_habit:
-        message += f'Связанная привычка: {related_habit}'
+        message += f'Связанная привычка: {related_habit.action}'
     elif reward:
         message += f'Вознаграждение: {reward}'
 
@@ -110,7 +110,7 @@ def update_periodical_task(pk, place, time_: datetime, action, related_habit,
                    f'Время проведения: {time_}\n'
                    f'Продолжительность: {time_to_complete} c.\n')
         if related_habit:
-            message += f'Связанная привычка: {related_habit}'
+            message += f'Связанная привычка: {related_habit.action}'
         elif reward:
             message += f'Вознаграждение: {reward}'
 

@@ -16,9 +16,10 @@ class Habit(models.Model):
     action = models.CharField(max_length=255, verbose_name='Действие',
                               **options)
     pleasant = models.BooleanField(verbose_name='Приятная привычка', **options)
-    related_habit = models.CharField(max_length=255,
-                                     verbose_name='Связанная привычка',
-                                     **options)
+    related_habit = models.ForeignKey('Habit', on_delete=models.SET_NULL,
+                                      max_length=255,
+                                      verbose_name='Связанная привычка',
+                                      **options)
     reward = models.CharField(max_length=255, verbose_name='Вознаграждение',
                               **options)
     periodicity = models.PositiveIntegerField(verbose_name='Периодичность',
@@ -44,7 +45,8 @@ class Habit(models.Model):
         if self.pleasant and self.related_habit or self.pleasant and self.reward or self.reward and self.related_habit:  # noqa
             raise ValueError(
                 'Может быть указано либо поле Приятная привычка, либо Связанная привычка, либо Вознаграждение!')  # noqa
-        super().save(*args, force_insert=False, force_update=False, using=None,  # noqa
+        super().save(*args, force_insert=False, force_update=False, using=None,
+                     # noqa
                      update_fields=None)
 
     class Meta:
