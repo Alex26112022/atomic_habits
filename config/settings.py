@@ -29,7 +29,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', False) == 'True'
 
-ALLOWED_HOSTS = []
+ENV_TYPE = os.getenv('ENV_TYPE')
+
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -84,14 +86,29 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+if ENV_TYPE == 'local':
+    host = os.getenv('POSTGRES_HOST_LOCAL')
+    celery_broker = os.getenv('CELERY_BROKER_URL_LOCAL')
+    celery_result = os.getenv('CELERY_RESULT_BACKEND_LOCAL')
+
+    STATICFILES_DIRS = (
+        BASE_DIR / 'static',
+    )
+else:
+    host = os.getenv('POSTGRES_HOST')
+    celery_broker = os.getenv('CELERY_BROKER_URL')
+    celery_result = os.getenv('CELERY_RESULT_BACKEND')
+
+    STATIC_ROOT = BASE_DIR / 'static'
+
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('ENGINE'),
-        'NAME': os.getenv('NAME'),
-        'USER': os.getenv('USER'),
-        'PASSWORD': os.getenv('PASSWORD'),
-        'HOST': os.getenv('HOST'),
-        'PORT': os.getenv('PORT'),
+        'NAME': os.getenv('POSTGRES_DB'),
+        'USER': os.getenv('POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'HOST': host,
+        'PORT': os.getenv('POSTGRES_PORT'),
     }
 }
 
@@ -100,16 +117,20 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',  # noqa
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        # noqa
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',  # noqa
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        # noqa
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',  # noqa
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        # noqa
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',  # noqa
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        # noqa
     },
 ]
 
@@ -128,9 +149,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -160,8 +178,8 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [os.getenv('CORS_ALLOWED_ORIGINS')]
 CSRF_TRUSTED_ORIGINS = [os.getenv('CSRF_TRUSTED_ORIGINS')]
 
-CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
-CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
+CELERY_BROKER_URL = celery_broker
+CELERY_RESULT_BACKEND = celery_result
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
