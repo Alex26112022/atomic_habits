@@ -51,11 +51,12 @@ services:
     tty: true
     networks:
       - backend
+      - frontend
     env_file:
       - .env
     restart: on-failure
     command:
-      celery -A config worker -l INFO -S django -P eventlet
+      celery -A config worker -l INFO
     depends_on:
       - db
       - redis
@@ -72,7 +73,7 @@ services:
       - .env
     restart: on-failure
     command:
-            celery -A config beat -l INFO -S django
+            celery -A config beat -l info
     depends_on:
       - db
       - redis
