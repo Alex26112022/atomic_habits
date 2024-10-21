@@ -27,11 +27,28 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', False) == 'True'
+ENV_TYPE = os.environ.get('ENV_TYPE')
 
-ENV_TYPE = os.getenv('ENV_TYPE')
+if ENV_TYPE == 'local':
+    DEBUG = int(os.environ.get("DEBUG", default=0))
+    host = os.environ.get('POSTGRES_HOST_LOCAL')
+    celery_broker = os.environ.get('BROKER_URL_LOCAL')
+    celery_result = os.environ.get('RESULT_BACKEND_LOCAL')
+
+    STATICFILES_DIRS = (
+        BASE_DIR / 'static',
+    )
+else:
+    DEBUG = 0
+    host = os.environ.get('POSTGRES_HOST')
+    celery_broker = os.environ.get('BROKER_URL')
+    celery_result = os.environ.get('RESULT_BACKEND')
+
+    STATIC_ROOT = BASE_DIR / 'static'
 
 ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS").split(" ")
+CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS").split(" ")
 
 # Application definition
 
@@ -86,29 +103,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-if ENV_TYPE == 'local':
-    host = os.getenv('POSTGRES_HOST_LOCAL')
-    celery_broker = os.getenv('CELERY_BROKER_URL_LOCAL')
-    celery_result = os.getenv('CELERY_RESULT_BACKEND_LOCAL')
-
-    STATICFILES_DIRS = (
-        BASE_DIR / 'static',
-    )
-else:
-    host = os.getenv('POSTGRES_HOST')
-    celery_broker = os.getenv('CELERY_BROKER_URL')
-    celery_result = os.getenv('CELERY_RESULT_BACKEND')
-
-    STATIC_ROOT = BASE_DIR / 'static'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('ENGINE'),
-        'NAME': os.getenv('POSTGRES_DB'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': host,
-        'PORT': os.getenv('POSTGRES_PORT'),
+        "ENGINE": os.environ.get("ENGINE"),
+        "NAME": os.environ.get("POSTGRES_DB"),
+        "USER": os.environ.get("POSTGRES_USER"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+        "HOST": host,
+        "PORT": os.environ.get("POSTGRES_PORT"),
     }
 }
 
@@ -175,9 +178,6 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
-CORS_ALLOWED_ORIGINS = [os.getenv('CORS_ALLOWED_ORIGINS')]
-CSRF_TRUSTED_ORIGINS = [os.getenv('CSRF_TRUSTED_ORIGINS')]
-
 CELERY_BROKER_URL = celery_broker
 CELERY_RESULT_BACKEND = celery_result
 CELERY_TIMEZONE = TIME_ZONE
@@ -191,4 +191,4 @@ FIRST_INTERVAL = 5
 SECOND_INTERVAL = 1
 
 TELEGRAM_URL = 'https://api.telegram.org/bot'
-TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
+TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')

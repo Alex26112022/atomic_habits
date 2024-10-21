@@ -26,7 +26,7 @@ services:
       timeout: 5s
       retries: 5
 
-  app:
+  web:
     build: .
     tty: true
     container_name: app
@@ -38,12 +38,13 @@ services:
     ports:
       - "8000:8000"
     command:
-      sh -c "python manage.py migrate && python manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:8000"
+      gunicorn config.wsgi:application --bind 0.0.0.0:8000
     depends_on:
       db:
         condition: service_healthy
     volumes:
-      - .:/app
+      - static_volume:/home/app/web/static
+      - media_volume:/home/app/web/media
 
   celery:
     build: .
@@ -58,9 +59,9 @@ services:
     depends_on:
       - db
       - redis
-      - app
+      - web
     volumes:
-      - .:/app
+      - .:/home/app/web/
 
   celery-beat:
     build: .
@@ -75,15 +76,18 @@ services:
     depends_on:
       - db
       - redis
-      - app
+      - web
     volumes:
-      - .:/app
+      - .:/home/app/web/
 
 networks:
   frontend:
     driver: bridge
   backend:
     driver: bridge
+    internal: true
 
 volumes:
   pg_data:
+  static_volume:
+  media_volume:
